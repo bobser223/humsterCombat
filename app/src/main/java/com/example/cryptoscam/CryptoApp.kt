@@ -1,0 +1,13 @@
+package com.example.cryptoscam
+
+import android.app.Application
+
+class CryptoApp : Application() {
+    lateinit var container: AppContainer
+        private set
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppContainer(this)
+    }
+}
