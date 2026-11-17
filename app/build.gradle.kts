@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -10,6 +12,11 @@ android {
         version = release(37)
     }
 
+    buildFeatures {
+        compose = true      // це у вас, мабуть, уже є
+        buildConfig = true  // додати
+    }
+
     defaultConfig {
         applicationId = "com.example.cryptoscam"
         minSdk = 24
@@ -18,6 +25,17 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProps = Properties()
+        val localPropsFile = rootProject.file("local.properties")
+        if (localPropsFile.exists()) {
+            localPropsFile.inputStream().use { localProps.load(it) }
+        }
+        buildConfigField(
+            "String",
+            "COINGECKO_API_KEY",
+            "\"${localProps.getProperty("COINGECKO_API_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -31,9 +49,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures {
-        compose = true
-    }
+
 }
 
 dependencies {
@@ -50,6 +66,9 @@ dependencies {
     implementation(libs.androidx.room3.runtime)
     implementation(libs.androidx.sqlite.framework)
     ksp(libs.androidx.room3.compiler)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
