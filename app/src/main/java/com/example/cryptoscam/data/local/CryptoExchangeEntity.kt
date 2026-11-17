@@ -5,7 +5,7 @@ import androidx.room3.PrimaryKey
 
 @Entity(tableName = "crypto_assets")
 data class CryptoExchangeEntity(
-    @PrimaryKey val id: Long,
+    @PrimaryKey val id: String,
     val currency: String, // name in the API
     val currencyAbbreviation: String, // symbol in  API
     val logoUrl: String?,
