@@ -7,5 +7,6 @@ data class CoinDto(
     @SerializedName("symbol") val currencyAbbreviation: String?,
     @SerializedName("name") val currency: String?,
     @SerializedName("image") val logoUrl: String?,
-    @SerializedName("current_price") val priceUsd: Double?
+    @SerializedName("current_price") val priceUsd: Double?,
+    @SerializedName("market_cap_rank") val rank: Int?
 )
