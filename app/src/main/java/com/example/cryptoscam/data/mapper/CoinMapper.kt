@@ -2,6 +2,7 @@ package com.example.cryptoscam.data.mapper
 
 import com.example.cryptoscam.data.local.CryptoExchangeEntity
 import com.example.cryptoscam.data.remote.dto.CoinDto
+import com.example.cryptoscam.domain.model.CryptoAsset
 
 
 fun CoinDto.toEntity(rank: Int, now: Long): CryptoExchangeEntity? {
@@ -20,6 +21,18 @@ fun CoinDto.toEntity(rank: Int, now: Long): CryptoExchangeEntity? {
             updatedAt = now
     )
 }
+
+
+
+fun CryptoExchangeEntity.toDomain(): CryptoAsset = CryptoAsset(
+    id = id,
+    currency = currency,
+    currencyAbbreviation = currencyAbbreviation,
+    logoUrl = logoUrl,
+    priceUsd = priceUsd,
+    rank = rank,
+    updatedAt = updatedAt
+)
 
 fun List<CoinDto>.toEntities(now: Long): List<CryptoExchangeEntity> =
     mapIndexedNotNull { index, dto ->
