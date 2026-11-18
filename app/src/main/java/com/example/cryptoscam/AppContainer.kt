@@ -4,6 +4,12 @@ package com.example.cryptoscam
 import android.content.Context
 import com.example.cryptoscam.data.local.CryptoExchangeDatabase
 import com.example.cryptoscam.data.remote.CoinGeckoApi
+import com.example.cryptoscam.data.repository.CryptoRepositoryImpl
+import com.example.cryptoscam.domain.repository.CryptoRepository
+import com.example.cryptoscam.domain.usecase.ObserveCryptoAssetsUseCase
+import com.example.cryptoscam.domain.usecase.ObserveLastUpdatedUseCase
+import com.example.cryptoscam.domain.usecase.SyncCryptoAssetsUseCase
+import com.example.cryptoscam.worker.SyncScheduler
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -33,5 +39,13 @@ class AppContainer(context: Context) {
         .build()
 
     val coinApi: CoinGeckoApi = retrofit.create(CoinGeckoApi::class.java)
-    // later: repo, use cases
+
+
+    private val repository: CryptoRepository = CryptoRepositoryImpl(coinApi, cryptoDao)
+
+    val observeCryptoAssets = ObserveCryptoAssetsUseCase(repository)
+    val observeLastUpdated = ObserveLastUpdatedUseCase(repository)
+    val syncCryptoAssets = SyncCryptoAssetsUseCase(repository)
+
+    val syncScheduler = SyncScheduler(context)
 }
