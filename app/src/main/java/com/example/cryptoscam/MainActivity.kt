@@ -25,6 +25,7 @@ import com.example.cryptoscam.domain.model.SyncStatus
 import com.example.cryptoscam.domain.model.toMessage
 import com.example.cryptoscam.presentation.compose.AssetSearchField
 import com.example.cryptoscam.presentation.compose.CryptoAssetList
+import com.example.cryptoscam.presentation.compose.StarredFilter
 import com.example.cryptoscam.presentation.compose.StatusMessage
 import com.example.cryptoscam.presentation.compose.SyncButton
 import com.example.cryptoscam.presentation.viewmodel.CryptoListViewModel
@@ -68,10 +69,12 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     val query by viewModel.query.collectAsStateWithLifecycle()
+                    val starredOnly by viewModel.starredOnly.collectAsStateWithLifecycle()
                     Column(Modifier.padding(innerPadding)) {
                         AssetSearchField(query, viewModel::onQueryChanged)
+                        StarredFilter(starredOnly, viewModel::onStarredOnlyChanged)
 
-                        if (query.isNotBlank() && assets.isEmpty()) {
+                        if (assets.isEmpty() && (query.isNotBlank() || starredOnly)) {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
@@ -80,13 +83,17 @@ class MainActivity : ComponentActivity() {
                                     .padding(16.dp)
                             ) {
                                 StatusMessage(
-                                    text = "За запитом «$query» нічого не знайдено",
+                                    text = if (query.isNotBlank())
+                                        "За запитом «$query» нічого не знайдено"
+                                    else
+                                        "Ще немає обраних монет",
                                     modifier = Modifier
                                 )
                             }
                         } else {
                             CryptoAssetList(
                                 assets = assets,
+                                onStarClick = viewModel::onStarClicked,
                                 modifier = Modifier.weight(1f)
                             )
                         }

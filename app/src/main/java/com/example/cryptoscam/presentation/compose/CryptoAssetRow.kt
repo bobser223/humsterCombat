@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +35,10 @@ import com.example.cryptoscam.domain.model.CryptoAsset
 import com.example.cryptoscam.presentation.format.formatPriceUsd
 
 @Composable
-fun CryptoAssetRow(asset: CryptoAsset) {
+fun CryptoAssetRow(
+    asset: CryptoAsset,
+    onStarClick: () -> Unit
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.clickable { expanded = !expanded} ) {
         Row(
@@ -53,6 +61,16 @@ fun CryptoAssetRow(asset: CryptoAsset) {
             Text(asset.currencyAbbreviation)
             Spacer(Modifier.weight(1f))
             Text(asset.priceUsd?.let { formatPriceUsd(it) } ?: "Немає даних")
+            IconButton(onClick = onStarClick) {
+                Icon(
+                    imageVector = if (asset.isStarred) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    contentDescription = if (asset.isStarred) "Прибрати з обраних" else "Додати в обрані",
+                    tint = if (asset.isStarred)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         AnimatedVisibility(visible = expanded) {
