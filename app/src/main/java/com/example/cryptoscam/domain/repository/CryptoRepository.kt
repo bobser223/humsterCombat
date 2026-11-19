@@ -6,8 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface CryptoRepository {
 
-    /** Збережений список із бази, відсортований за рангом. Оновлюється сам. */
-    fun observeAssets(): Flow<List<CryptoAsset>>
+    /** Збережений список із бази, відсортований за рангом. Оновлюється сам.
+     * Приймає на вхід запит. За замовчуванням пустий запит метчить всі елементи,
+     * тому поведінка не зміниться
+     * */
+    fun observeAssets(query: String = ""): Flow<List<CryptoAsset>>
 
     /** Час останнього успішного оновлення; null, якщо даних ще не було. */
     fun observeLastUpdated(): Flow<Long?>

@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CryptoExchangeDao {
 
-    @Query("SELECT * FROM crypto_assets ORDER BY rank ASC")
-    fun observeAll(): Flow<List<CryptoExchangeEntity>>
+//    @Query("SELECT * FROM crypto_assets ORDER BY rank ASC")
+//    fun observeAll(): Flow<List<CryptoExchangeEntity>>
 
     @Query("SELECT MAX(updatedAt) FROM crypto_assets")
     fun observeLastUpdated(): Flow<Long?>
@@ -27,4 +27,13 @@ interface CryptoExchangeDao {
         deleteAll()
         insertAll(items)
     }
+
+    // Instead of observeAll
+    @Query("""
+        SELECT * FROM crypto_assets
+        WHERE currency LIKE '%' || :query || '%'
+            OR currencyAbbreviation LIKE '%' || :query || '%'
+        ORDER BY rank ASC
+    """)
+    fun observeQueried(query: String): Flow<List<CryptoExchangeEntity>>
 }

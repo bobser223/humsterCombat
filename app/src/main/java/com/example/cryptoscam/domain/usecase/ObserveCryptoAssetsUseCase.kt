@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.Flow
 class ObserveCryptoAssetsUseCase(
     private val repository: CryptoRepository
 ) {
-    operator fun invoke(): Flow<List<CryptoAsset>> = repository.observeAssets()
+    operator fun invoke(query: String = ""): Flow<List<CryptoAsset>> =
+        repository.observeAssets(query)
 }
