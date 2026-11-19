@@ -12,5 +12,6 @@ data class CryptoAsset(
     val updatedAt: Long,
     val marketCapUsd: Double?,
     val athUsd: Double?,
-    val athDate: Long? // epoch millis
+    val athDate: Long?, // epoch millis
+    val isStarred: Boolean
 )
