@@ -8,7 +8,7 @@ import androidx.sqlite.driver.AndroidSQLiteDriver
 
 
 // Вказуємо список усіх таблиць (entities) та версію бази даних
-@Database(entities = [CryptoExchangeEntity::class], version = 1, exportSchema = false)
+@Database(entities = [CryptoExchangeEntity::class], version = 2, exportSchema = false)
 abstract class CryptoExchangeDatabase : RoomDatabase() {
 
     // Метод, через який ми отримуватимемо доступ до нашого DAO
