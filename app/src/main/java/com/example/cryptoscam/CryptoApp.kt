@@ -9,5 +9,6 @@ class CryptoApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        container.syncScheduler.schedulePeriodic(60L)
     }
 }
