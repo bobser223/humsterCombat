@@ -48,9 +48,7 @@ class MainActivity : ComponentActivity() {
                             title = {
                                 Row {
                                     Text("CryptoSCAM")
-
                                 }
-
                             },
                             actions = {
                                 Text(
