@@ -17,4 +17,7 @@ interface CryptoRepository {
 
     /** Завантажити свіжі дані з API і, якщо все добре, замінити ними базу. */
     suspend fun sync(): SyncResult
+
+    /** Додати монету в обрані або прибрати з них. Зберігається окремо від бази. */
+    suspend fun toggleStar(id: String)
 }

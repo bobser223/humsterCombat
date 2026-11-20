@@ -11,6 +11,7 @@ import com.example.cryptoscam.domain.model.CryptoAsset
 import com.example.cryptoscam.domain.model.SyncStatus
 import com.example.cryptoscam.domain.usecase.ObserveCryptoAssetsUseCase
 import com.example.cryptoscam.domain.usecase.ObserveLastUpdatedUseCase
+import com.example.cryptoscam.domain.usecase.ToggleStarUseCase
 import com.example.cryptoscam.worker.SyncScheduler
 import com.example.cryptoscam.worker.SyncWorker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,6 +35,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class CryptoListViewModel(
     observeCryptoAssets: ObserveCryptoAssetsUseCase,
     observeLastUpdated: ObserveLastUpdatedUseCase,
+    private val toggleStar: ToggleStarUseCase,
     private val syncScheduler: SyncScheduler
 ) : ViewModel() {
 
@@ -43,13 +46,22 @@ class CryptoListViewModel(
     private val _query = MutableStateFlow("")
     val query = _query.asStateFlow()
 
+    private val _starredOnly = MutableStateFlow(false)
+    val starredOnly = _starredOnly.asStateFlow()
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val assets: StateFlow<List<CryptoAsset>> =
+    private val queriedAssets =
         query
             .debounce(300.milliseconds)
             .map { it.trim() }
             .distinctUntilChanged()
             .flatMapLatest { observeCryptoAssets(it) }
+
+    // Фільтр без debounce: галочка має спрацьовувати одразу
+    val assets: StateFlow<List<CryptoAsset>> =
+        combine(queriedAssets, starredOnly) { assets, starredOnly ->
+            if (starredOnly) assets.filter { it.isStarred } else assets
+        }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
@@ -66,6 +78,15 @@ class CryptoListViewModel(
 
     fun onQueryChanged(newQuery: String) {
         _query.value = newQuery
+    }
+
+    fun onStarredOnlyChanged(value: Boolean) {
+        _starredOnly.value = value
+    }
+
+    // Список оновиться сам: starredIds з DataStore емітить новий набір
+    fun onStarClicked(id: String) {
+        viewModelScope.launch { toggleStar(id) }
     }
 
     // Стан ручного оновлення, взятий з WorkManager
@@ -113,6 +134,7 @@ class CryptoListViewModel(
                 CryptoListViewModel(
                     container.observeCryptoAssets,
                     container.observeLastUpdated,
+                    container.toggleStar,
                     container.syncScheduler
                 )
             }

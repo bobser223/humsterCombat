@@ -1,6 +1,7 @@
 package com.example.cryptoscam.data.repository
 
 import com.example.cryptoscam.data.local.CryptoExchangeDao
+import com.example.cryptoscam.data.local.StarredCoinsStore
 import com.example.cryptoscam.data.mapper.toDomain
 import com.example.cryptoscam.data.mapper.toEntities
 import com.example.cryptoscam.data.remote.CoinGeckoApi
@@ -8,22 +9,31 @@ import com.example.cryptoscam.domain.model.CryptoAsset
 import com.example.cryptoscam.domain.model.SyncResult
 import com.example.cryptoscam.domain.repository.CryptoRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 class CryptoRepositoryImpl(
     private val api: CoinGeckoApi,
-    private val dao: CryptoExchangeDao
+    private val dao: CryptoExchangeDao,
+    private val starredStore: StarredCoinsStore
 ) : CryptoRepository {
     override fun observeAssets(query: String): Flow<List<CryptoAsset>> =
-        dao.observeQueried(query)
-            .map { entities ->
-                entities.map { it.toDomain() }
+        combine(dao.observeQueried(query), starredStore.starredIds) {
+            entities, starred ->
+            entities.map {
+                it.toDomain(isStarred = it.id in starred)
             }
+        }
+
+
 
     override fun observeLastUpdated(): Flow<Long?> =
         dao.observeLastUpdated()
+
+    override suspend fun toggleStar(id: String) =
+        starredStore.toggle(id)
 
 
     override suspend fun sync(): SyncResult {
