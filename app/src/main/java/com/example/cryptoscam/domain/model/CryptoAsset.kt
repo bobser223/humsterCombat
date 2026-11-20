@@ -9,6 +9,8 @@ data class CryptoAsset(
     val logoUrl: String?, // null -> placeholder
     val priceUsd: Double?, // null -> "Немає даних"
     val rank: Int,
-    val updatedAt: Long
-
+    val updatedAt: Long,
+    val marketCapUsd: Double?,
+    val athUsd: Double?,
+    val athDate: Long? // epoch millis
 )

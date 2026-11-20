@@ -41,26 +41,7 @@ fun CryptoAssetList(
 ) {
     LazyColumn(modifier) {
         items(assets, key = { it.id }) { asset ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                Text("${asset.rank}", modifier = Modifier.width(28.dp))
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(asset.logoUrl)
-                        .crossfade(true)
-                        .build(),
-                    placeholder = rememberVectorPainter(Icons.Filled.MonetizationOn),
-                    error = rememberVectorPainter(Icons.Filled.MonetizationOn),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp)
-                    )
-                Text(asset.currencyAbbreviation)
-                Spacer(Modifier.weight(1f))
-                Text(asset.priceUsd?.let { formatPriceUsd(it) } ?: "Немає даних")
-            }
+            CryptoAssetRow(asset)
             HorizontalDivider()
         }
     }

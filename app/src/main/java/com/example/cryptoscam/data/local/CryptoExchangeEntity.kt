@@ -11,5 +11,8 @@ data class CryptoExchangeEntity(
     val logoUrl: String?,
     val priceUsd: Double?,
     val rank: Int,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val marketCapUsd: Double?,
+    val athUsd: Double?, // all-time high price
+    val athDate: Long? // epoch millis, parsed from ISO 8601 in the API
 )
