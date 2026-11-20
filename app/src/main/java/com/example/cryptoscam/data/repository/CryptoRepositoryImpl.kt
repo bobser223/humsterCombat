@@ -16,8 +16,8 @@ class CryptoRepositoryImpl(
     private val api: CoinGeckoApi,
     private val dao: CryptoExchangeDao
 ) : CryptoRepository {
-    override fun observeAssets(): Flow<List<CryptoAsset>> =
-        dao.observeAll()
+    override fun observeAssets(query: String): Flow<List<CryptoAsset>> =
+        dao.observeQueried(query)
             .map { entities ->
                 entities.map { it.toDomain() }
             }
