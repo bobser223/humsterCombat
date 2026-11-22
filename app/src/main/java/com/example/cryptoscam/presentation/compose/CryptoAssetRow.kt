@@ -37,10 +37,11 @@ import com.example.cryptoscam.presentation.format.formatPriceUsd
 @Composable
 fun CryptoAssetRow(
     asset: CryptoAsset,
+    expanded: Boolean,
+    onToggleExpand: () -> Unit,
     onStarClick: () -> Unit
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    Column(Modifier.clickable { expanded = !expanded} ) {
+    Column(Modifier.clickable { onToggleExpand() } ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -76,6 +77,7 @@ fun CryptoAssetRow(
         AnimatedVisibility(visible = expanded) {
             CryptoAssetDetails(asset)
         }
+
     }
 
 }

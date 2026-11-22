@@ -72,11 +72,19 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     val query by viewModel.query.collectAsStateWithLifecycle()
                     val starredOnly by viewModel.starredOnly.collectAsStateWithLifecycle()
+                    val expandedIds by viewModel.expandedIds.collectAsStateWithLifecycle()
                     val focusManager = LocalFocusManager.current
 
-                    BackHandler(enabled = query.isNotEmpty() || starredOnly){
-                        viewModel.resetFilters()
-                        focusManager.clearFocus()
+                    val hasVisibleExpanded = assets.any { it.id in expandedIds }
+                    val hasFilters = query.isNotEmpty() || starredOnly
+
+                    BackHandler(enabled = hasVisibleExpanded || hasFilters) {
+                        if (hasVisibleExpanded) {
+                            viewModel.collapseAll()          // 1-й пріоритет: картки
+                        } else {
+                            viewModel.resetFilters()         // 2-й пріоритет: пошук і фільтр
+                            focusManager.clearFocus()
+                        }
                     }
 
 
@@ -103,6 +111,8 @@ class MainActivity : ComponentActivity() {
                         } else {
                             CryptoAssetList(
                                 assets = assets,
+                                expandedIds = expandedIds,
+                                onToggleExpand = viewModel::onToggleExpanded,
                                 onStarClick = viewModel::onStarClicked,
                                 modifier = Modifier.weight(1f)
                             )

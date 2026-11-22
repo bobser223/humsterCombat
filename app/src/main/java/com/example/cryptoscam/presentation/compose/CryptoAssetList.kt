@@ -10,6 +10,8 @@ import com.example.cryptoscam.domain.model.CryptoAsset
 @Composable
 fun CryptoAssetList(
     assets: List<CryptoAsset>,
+    expandedIds: Set<String>,
+    onToggleExpand: (String) -> Unit,
     onStarClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -17,6 +19,8 @@ fun CryptoAssetList(
         items(assets, key = { it.id }) { asset ->
             CryptoAssetRow(
                 asset = asset,
+                expanded = asset.id in expandedIds,
+                onToggleExpand = { onToggleExpand(asset.id) },
                 onStarClick = { onStarClick(asset.id) }
             )
             HorizontalDivider()
