@@ -49,6 +49,21 @@ class CryptoListViewModel(
     private val _starredOnly = MutableStateFlow(false)
     val starredOnly = _starredOnly.asStateFlow()
 
+
+    private val _expandedIds = MutableStateFlow<Set<String>>(emptySet())
+    val expandedIds = _expandedIds.asStateFlow()
+
+    fun onToggleExpanded(id: String) {
+        _expandedIds.value =
+            if (id in _expandedIds.value) _expandedIds.value - id
+        else _expandedIds.value + id
+    }
+
+    fun collapseAll() {
+        _expandedIds.value = emptySet()
+    }
+
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val queriedAssets =
         query
@@ -101,6 +116,12 @@ class CryptoListViewModel(
             )
 
     fun refresh() = syncScheduler.syncNow()
+
+    fun resetFilters(){
+        _query.value = ""
+        _starredOnly.value = false
+
+    }
 
     private fun WorkInfo?.toSyncStatus(lastUpdated: Long?): SyncStatus {
         if (this == null) return SyncStatus.Idle
