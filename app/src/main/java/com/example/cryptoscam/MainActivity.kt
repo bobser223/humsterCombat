@@ -31,7 +31,12 @@ import com.example.cryptoscam.presentation.compose.SyncButton
 import com.example.cryptoscam.presentation.viewmodel.CryptoListViewModel
 import com.example.cryptoscam.ui.theme.CryptoSCAMTheme
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalFocusManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -78,12 +83,25 @@ class MainActivity : ComponentActivity() {
                     val hasVisibleExpanded = assets.any { it.id in expandedIds }
                     val hasFilters = query.isNotEmpty() || starredOnly
 
-                    BackHandler(enabled = hasVisibleExpanded || hasFilters) {
-                        if (hasVisibleExpanded) {
-                            viewModel.collapseAll()          // 1-й пріоритет: картки
-                        } else {
-                            viewModel.resetFilters()         // 2-й пріоритет: пошук і фільтр
-                            focusManager.clearFocus()
+                    val listState = rememberLazyListState()
+                    val scope = rememberCoroutineScope()
+
+                    val isScrolled by remember {
+                        derivedStateOf {
+                            listState.firstVisibleItemIndex > 0 ||
+                                    listState.firstVisibleItemScrollOffset > 0
+                        }
+                    }
+
+
+                    BackHandler(enabled = hasVisibleExpanded || hasFilters || isScrolled) {
+                        when {
+                            hasVisibleExpanded -> viewModel.collapseAll() // перший пріоритет - закрити розгорнуті
+                            hasFilters -> { // другий пріоритет - скинути фільтр
+                                viewModel.resetFilters()
+                                focusManager.clearFocus()
+                            }
+                            else -> scope.launch { listState.animateScrollToItem(0) } // третій пріоритет - повернутися до гори списку
                         }
                     }
 
@@ -114,6 +132,7 @@ class MainActivity : ComponentActivity() {
                                 expandedIds = expandedIds,
                                 onToggleExpand = viewModel::onToggleExpanded,
                                 onStarClick = viewModel::onStarClicked,
+                                listState = listState,
                                 modifier = Modifier.weight(1f)
                             )
                         }

@@ -1,6 +1,7 @@
 package com.example.cryptoscam.presentation.compose
 
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
@@ -13,9 +14,10 @@ fun CryptoAssetList(
     expandedIds: Set<String>,
     onToggleExpand: (String) -> Unit,
     onStarClick: (String) -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier) {
+    LazyColumn(modifier, state = listState) {
         items(assets, key = { it.id }) { asset ->
             CryptoAssetRow(
                 asset = asset,
