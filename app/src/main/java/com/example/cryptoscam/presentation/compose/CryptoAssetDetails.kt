@@ -29,7 +29,7 @@ fun CryptoAssetDetails(asset: CryptoAsset) {
             formatDate(asset.athDate)
         else "Немає даних"
         val athPrice = if (asset.athUsd != null)
-            formatCapitalization(asset.athUsd)
+            formatPriceUsd(asset.athUsd)
         else "Немає даних"
         val capitalizationText = if (asset.marketCapUsd != null)
             formatCapitalization(asset.marketCapUsd)
