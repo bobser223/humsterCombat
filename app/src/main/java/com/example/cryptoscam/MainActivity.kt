@@ -30,6 +30,8 @@ import com.example.cryptoscam.presentation.compose.StatusMessage
 import com.example.cryptoscam.presentation.compose.SyncButton
 import com.example.cryptoscam.presentation.viewmodel.CryptoListViewModel
 import com.example.cryptoscam.ui.theme.CryptoSCAMTheme
+import androidx.activity.compose.BackHandler
+import androidx.compose.ui.platform.LocalFocusManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -70,6 +72,14 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     val query by viewModel.query.collectAsStateWithLifecycle()
                     val starredOnly by viewModel.starredOnly.collectAsStateWithLifecycle()
+                    val focusManager = LocalFocusManager.current
+
+                    BackHandler(enabled = query.isNotEmpty() || starredOnly){
+                        viewModel.resetFilters()
+                        focusManager.clearFocus()
+                    }
+
+
                     Column(Modifier.padding(innerPadding)) {
                         AssetSearchField(query, viewModel::onQueryChanged)
                         StarredFilter(starredOnly, viewModel::onStarredOnlyChanged)

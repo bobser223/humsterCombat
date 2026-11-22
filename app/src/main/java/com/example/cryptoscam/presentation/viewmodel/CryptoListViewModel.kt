@@ -102,6 +102,12 @@ class CryptoListViewModel(
 
     fun refresh() = syncScheduler.syncNow()
 
+    fun resetFilters(){
+        _query.value = ""
+        _starredOnly.value = false
+
+    }
+
     private fun WorkInfo?.toSyncStatus(lastUpdated: Long?): SyncStatus {
         if (this == null) return SyncStatus.Idle
         return when (state) {
