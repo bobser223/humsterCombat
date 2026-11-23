@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
                     val query by viewModel.query.collectAsStateWithLifecycle()
                     val starredOnly by viewModel.starredOnly.collectAsStateWithLifecycle()
                     val expandedIds by viewModel.expandedIds.collectAsStateWithLifecycle()
+                    val lastUpdated by viewModel.lastUpdated.collectAsStateWithLifecycle()
                     val focusManager = LocalFocusManager.current
 
                     val hasVisibleExpanded = assets.any { it.id in expandedIds }
@@ -110,7 +111,8 @@ class MainActivity : ComponentActivity() {
                         AssetSearchField(query, viewModel::onQueryChanged)
                         StarredFilter(starredOnly, viewModel::onStarredOnlyChanged)
 
-                        if (syncStatus == SyncStatus.Idle) {
+                        // Порожній стан залежить від наявності даних у Room, а не від статусу WorkManager
+                        if (lastUpdated == null) {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
@@ -122,9 +124,7 @@ class MainActivity : ComponentActivity() {
                                     text = "Ще немає збережених даних"
                                 )
                             }
-                        }
-
-                        if (assets.isEmpty() && (query.isNotBlank() || starredOnly)) {
+                        } else if (assets.isEmpty() && (query.isNotBlank() || starredOnly)) {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
