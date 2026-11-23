@@ -138,11 +138,19 @@ class CryptoListViewModel(
             )
 
             WorkInfo.State.FAILED -> SyncStatus.UpdateError(
-                message = outputData.getString(SyncWorker.KEY_ERROR)
+                message = errorMessage(outputData.getString(SyncWorker.KEY_ERROR))
             )
 
             WorkInfo.State.CANCELLED -> SyncStatus.Idle
         }
+    }
+
+    // Код помилки з Worker -> зрозумілий текст для користувача
+    private fun errorMessage(code: String?): String = when (code) {
+        SyncWorker.ERROR_NETWORK -> "немає з'єднання або сервер недоступний"
+        SyncWorker.ERROR_AUTH -> "невірний API-ключ або немає доступу"
+        SyncWorker.ERROR_INVALID -> "некоректна відповідь сервера"
+        else -> "невідома помилка"
     }
 
     private fun formatTime(millis: Long): String =
