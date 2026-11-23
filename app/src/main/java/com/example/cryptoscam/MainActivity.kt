@@ -32,10 +32,15 @@ import com.example.cryptoscam.presentation.viewmodel.CryptoListViewModel
 import com.example.cryptoscam.ui.theme.CryptoSCAMTheme
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalFocusManager
+import com.example.cryptoscam.presentation.compose.FreeBitcoinDialog
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,6 +97,30 @@ class MainActivity : ComponentActivity() {
                             listState.firstVisibleItemIndex > 0 ||
                                     listState.firstVisibleItemScrollOffset > 0
                         }
+                    }
+
+
+                    var scamShown by rememberSaveable { mutableStateOf(false) }
+                    var showScam by rememberSaveable { mutableStateOf(false) }
+
+                    val reachedEnd by remember {
+                        derivedStateOf {
+                            val info = listState.layoutInfo
+                            info.totalItemsCount > 0 &&
+                                    listState.firstVisibleItemIndex > 0 &&      // справді прокрутив
+                                    info.visibleItemsInfo.lastOrNull()?.index == info.totalItemsCount - 1
+                        }
+                    }
+
+                    LaunchedEffect(reachedEnd) {
+                        if (reachedEnd && !scamShown) {
+                            scamShown = true
+                            showScam = true
+                        }
+                    }
+
+                    if (showScam) {
+                        FreeBitcoinDialog(onDismiss = { showScam = false })
                     }
 
 
