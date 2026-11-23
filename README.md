@@ -7,6 +7,7 @@
 Android-застосунок, який показує ціни **топ-30 криптовалют у доларах США**, зберігає їх локально в Room і періодично оновлює у фоні через WorkManager. Після першого успішного завантаження список доступний без інтернету, зокрема після перезапуску.
 
 **Демонстраційне відео:** (https://drive.google.com/file/d/14ULu1qN38XRNWIpT33V0pIi3Qi5JjJ2o/view?usp=sharing)
+
 https://github.com/user-attachments/assets/80e33a5b-79af-4aa6-8180-c4bfe3fca648
 
 ## Команда
