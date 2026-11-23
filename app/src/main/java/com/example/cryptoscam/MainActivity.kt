@@ -110,6 +110,20 @@ class MainActivity : ComponentActivity() {
                         AssetSearchField(query, viewModel::onQueryChanged)
                         StarredFilter(starredOnly, viewModel::onStarredOnlyChanged)
 
+                        if (syncStatus == SyncStatus.Idle) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                StatusMessage(
+                                    text = "Ще немає збережених даних"
+                                )
+                            }
+                        }
+
                         if (assets.isEmpty() && (query.isNotBlank() || starredOnly)) {
                             Box(
                                 contentAlignment = Alignment.Center,
